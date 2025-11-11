@@ -1,60 +1,94 @@
-import { Component, ElementRef, HostListener, inject } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { BehaviorSubject, debounceTime, switchMap, finalize } from 'rxjs';
+import { Component, ElementRef, HostListener, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { environment } from '../../../env/env';
-import { ReactiveFormsModule } from '@angular/forms';
+import { PostStateService } from '../../core/services/state/post-state.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-search-box',
-  imports: [ ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './search-box.component.html',
   styleUrl: './search-box.component.css',
 })
 export class SearchBoxComponent {
-private _fb = inject(FormBuilder);
-  // private _postService = inject(PostService);
-  private _elRef = inject(ElementRef);
-  // private _loader = inject(LoaderService);
+  private readonly _fb = inject(FormBuilder);
+  private readonly _elRef = inject(ElementRef);
+  readonly postState = inject(PostStateService);
 
-  private _apiImg = environment.imgUrl;
-  searchControl = this._fb.control('');
-  coverImg: string = this._apiImg;
-  results$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
-  showResults = false;
-
-  // protected readonly loader = this._loader;
+  private readonly _apiImg = environment.imgUrl;
+  readonly searchControl = this._fb.control('');
+  readonly coverImg: string = this._apiImg;
+  readonly showResults = signal<boolean>(false);
 
   ngOnInit(): void {
+    // Listen to search input changes with debounce
     this.searchControl.valueChanges
       .pipe(
         debounceTime(300),
-        // switchMap((value : string | null) => {
-          // this._loader.show(LoaderType.Small);
-        //   return this._postService
-        //     .searchPost(value || '')
-        //     .pipe(finalize(() => this._loader.hide(LoaderType.Small)));
-        // })
+        distinctUntilChanged()
       )
-      .subscribe((res) => {
-        this.results$.next([]);
-        this.showResults = true;
+      .subscribe((value: string | null) => {
+        const query = value?.trim() || '';
+        
+        if (query.length > 0) {
+          // Search posts using the state service
+          this.postState.search(query);
+          this.showResults.set(true);
+        } else {
+          // Reset to show all posts when search is empty
+          this.postState.resetFilters();
+          this.showResults.set(false);
+        }
       });
   }
 
+  /**
+   * Handle when a search result is selected
+   */
   onResultSelected() {
-    this.showResults = false;
+    this.showResults.set(false);
+    this.searchControl.setValue('', { emitEvent: false });
   }
 
+  /**
+   * Show results when input is focused (if there are results)
+   */
   onFocus() {
-    if (this.results$.value.length) {
-      this.showResults = true;
+    const hasResults = this.postState.posts().length > 0;
+    const hasQuery = this.searchControl.value?.trim();
+    
+    if (hasResults && hasQuery) {
+      this.showResults.set(true);
     }
   }
 
+  /**
+   * Hide results when clicking outside the component
+   */
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
     if (!this._elRef.nativeElement.contains(event.target)) {
-      this.showResults = false;
+      this.showResults.set(false);
     }
+  }
+
+  /**
+   * Clear search and reset filters
+   */
+  clearSearch() {
+    this.searchControl.setValue('', { emitEvent: false });
+    this.showResults.set(false);
+    this.postState.resetFilters();
+  }
+
+  /**
+   * Get truncated content for preview
+   */
+  getTruncatedContent(content: string, maxLength: number = 80): string {
+    if (!content) return '';
+    return content.length > maxLength 
+      ? content.substring(0, maxLength) + '...' 
+      : content;
   }
 }

@@ -29,8 +29,15 @@ export class AuthStateService {
     this.tokenService.clear();
   }
   getProfile() {
-    this.authService.getProfile().subscribe((res : ProfileResponse) => {
-      this._profile.set(res);
+    this.authService.getProfile().subscribe({
+      next: (res: ProfileResponse) => {
+        console.log('Profile loaded:', res);
+        this._profile.set(res);
+      },
+      error: (error) => {
+        console.error('Error loading profile:', error);
+        this._profile.set(null);
+      }
     });
   }
 }

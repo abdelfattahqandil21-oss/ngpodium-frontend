@@ -7,29 +7,92 @@
     class="w-full rounded px-4 py-2 bg-zinc-800/80 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-white/30"
   />
 
-  <!-- @if (loader.smallLoading()) { -->
+  <!-- Loading Spinner -->
+  @if (postState.loading()) {
     <div class="absolute right-3 top-1/2 -translate-y-1/2">
       <div class="w-4 h-4 border-2 border-zinc-400 border-t-transparent rounded-full animate-spin"></div>
     </div>
-  <!-- } -->
+  }
 
-  <!-- @let results = results$ | async; -->
-  <!-- @if (showResults && results?.length && searchControl.value?.trim()?.length) { -->
+  <!-- Clear Button -->
+  @if (searchControl.value && !postState.loading()) {
+    <button
+      (click)="clearSearch()"
+      class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
+      type="button"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  }
+
+  <!-- Search Results Dropdown -->
+  @if (showResults() && postState.posts().length > 0 && searchControl.value?.trim()) {
     <ul
       class="absolute left-0 right-0 mt-1 rounded border border-white/10 bg-zinc-900/95 divide-y divide-white/5 shadow-lg z-50 max-h-72 overflow-y-auto"
       style="backdrop-filter: blur(6px);"
     >
-      <!-- @for(post of results; track post.id) { -->
-        <li (click)="onResultSelected()" class="flex gap-3 p-2 hover:bg-white/5 cursor-pointer">
-          <img src="coverImg + post.coverImg" alt="post.header" class="h-12 w-20 object-cover rounded"/>
-          <div class="flex-1">
-            <p class="text-sm font-semibold text-white"> post.header </p>
-            <p class="text-xs text-zinc-400">
-              post.content ? post.content.split('').slice(0,80).join('') + '...' : '' 
+      @for(post of postState.posts(); track post.id) {
+        <li 
+          (click)="onResultSelected()" 
+          class="flex gap-3 p-2 hover:bg-white/5 cursor-pointer transition-colors"
+        >
+          <!-- Post Cover Image -->
+          @if (post.coverImage) {
+            <img 
+              [src]="coverImg + post.coverImage" 
+              [alt]="post.title" 
+              class="h-12 w-20 object-cover rounded"
+            />
+          } @else {
+            <div class="h-12 w-20 bg-zinc-800 rounded flex items-center justify-center">
+              <svg class="w-6 h-6 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
+          }
+          
+          <!-- Post Info -->
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-white truncate">{{ post.title }}</p>
+            <p class="text-xs text-zinc-400 line-clamp-2">
+              {{ getTruncatedContent(post.content, 80) }}
             </p>
+            
+            <!-- Tags -->
+            @if (post.tags && post.tags.length > 0) {
+              <div class="flex gap-1 mt-1 flex-wrap">
+                @for(tag of post.tags.slice(0, 3); track tag) {
+                  <span class="text-[10px] px-1.5 py-0.5 bg-zinc-800 text-zinc-400 rounded">
+                    {{ tag }}
+                  </span>
+                }
+              </div>
+            }
           </div>
         </li>
-      <!-- } -->
+      }
     </ul>
-  <!-- } -->
+  }
+
+  <!-- No Results Message -->
+  @if (showResults() && postState.posts().length === 0 && searchControl.value?.trim() && !postState.loading()) {
+    <div 
+      class="absolute left-0 right-0 mt-1 rounded border border-white/10 bg-zinc-900/95 shadow-lg z-50 p-4 text-center"
+      style="backdrop-filter: blur(6px);"
+    >
+      <p class="text-sm text-zinc-400">No posts found for "{{ searchControl.value }}"</p>
+    </div>
+  }
+
+  <!-- Error Message -->
+  @if (postState.error()) {
+    <div 
+      class="absolute left-0 right-0 mt-1 rounded border border-red-500/20 bg-red-900/20 shadow-lg z-50 p-3"
+      style="backdrop-filter: blur(6px);"
+    >
+      <p class="text-sm text-red-400">{{ postState.error() }}</p>
+    </div>
+  }
 </div>

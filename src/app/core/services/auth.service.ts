@@ -1,17 +1,34 @@
-import { environment } from '../../../env/env';
-import { inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ILogin, IRegister, ILogout, IrefreshToken,LoginResponse,LogoutResponse,ProfileResponse,RefreshTokenResponse,RegisterResponse } from './interfaces/auth.interface';
+import { environment } from '../../../env/env';
+import {
+  ILogin,
+  IRegister,
+  LoginResponse,
+  RegisterResponse,
+  LogoutResponse,
+  RefreshTokenResponse,
+  ProfileResponse,
+} from './interfaces/auth.interface';
+import { TokenService } from './token.service';
+import { interval, Subscription, switchMap, filter } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  http = inject(HttpClient);
-  private Base_URL = environment.apiUrl
-  private img_URL = environment.imgUrl
+  private readonly http = inject(HttpClient);
+  private readonly tokenService = inject(TokenService);
+  private readonly Base_URL = environment.apiUrl;
 
+  private refreshSub?: Subscription;
 
+  constructor() {
+    const token = this.tokenService.getToken();
+    if (token) {
+      this.startAutoRefresh();
+    }
+  }
 
   login(credentials: ILogin) {
     return this.http.post<LoginResponse>(`${this.Base_URL}/auth/login`, credentials);
@@ -22,9 +39,46 @@ export class AuthService {
   }
 
   logout() {
+    this.stopAutoRefresh();
     return this.http.post<LogoutResponse>(`${this.Base_URL}/auth/logout`, {});
   }
-  refreshToken() {
-    return this.http.post<RefreshTokenResponse>(`${this.Base_URL}/auth/refresh-token`, {});
+
+  refreshToken(token: string) {
+    return this.http.post<RefreshTokenResponse>(`${this.Base_URL}/auth/refresh`, { token });
+  }
+
+  getProfile() {
+    return this.http.get<ProfileResponse>(`${this.Base_URL}/auth/profile`);
+  }
+
+
+  startAutoRefresh() {
+    const expiresIn = this.tokenService.getExpiresIn();
+    if (!expiresIn) {
+      console.error('No expiration time found');
+      return this.stopAutoRefresh();
+    }
+
+    const expiresInMs = +expiresIn * 1000;
+    const refreshBefore = Math.max(expiresInMs - 60_000, 60_000);
+
+    this.stopAutoRefresh();
+
+    this.refreshSub = interval(refreshBefore)
+      .pipe(
+        filter(() => !!this.tokenService.getToken()),
+        switchMap(() => this.refreshToken(this.tokenService.getRefreshToken()!))
+      )
+      .subscribe({
+        next: (res) => {
+          this.tokenService.setToken(res.access_token);
+          console.log('Token refreshed successfully');
+        }
+      });
+  }
+
+  stopAutoRefresh() {
+    this.refreshSub?.unsubscribe();
+    this.refreshSub = undefined;
   }
 }

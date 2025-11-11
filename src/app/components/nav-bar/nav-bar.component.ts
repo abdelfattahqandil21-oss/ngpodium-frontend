@@ -13,6 +13,7 @@ import { RouterLink } from '@angular/router';
 })
 export class NavBarComponent {
 private readonly authSSVC = inject(AuthStateService);
+private readonly profile = this.authSSVC.profile;
 readonly isLoggedIn = this.authSSVC.isLoggedIn;
 
   constructor(){
@@ -21,7 +22,7 @@ readonly isLoggedIn = this.authSSVC.isLoggedIn;
     })
   }
 
-  protected readonly api = environment.imgUrl;
+  protected readonly api = environment.profile;
   protected readonly logo: string = "Ng Podium";
   readonly menuOpen = signal(false);
   toggleMenu(): void {
@@ -29,15 +30,24 @@ readonly isLoggedIn = this.authSSVC.isLoggedIn;
   }
 
   imgProfile = computed(() => {
-    
+    if(this.profile()?.image){
+      return this.api + this.profile()?.image;
+    }
     return '/assets/avatar.png';
+  });
+
+  nameProfile = computed(() => {
+    if(this.profile()?.username){
+      return this.profile()?.username;
+    }
+    return 'User';
   });
 
   onClickWrite(){
   
   }
   ngOnInit(): void {
-    
+    this.authSSVC.getProfile();
   }
 
 }

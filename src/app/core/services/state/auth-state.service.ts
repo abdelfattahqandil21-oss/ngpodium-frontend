@@ -1,4 +1,4 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { TokenService } from '../token.service';
 
 @Injectable({
@@ -6,12 +6,21 @@ import { TokenService } from '../token.service';
 })
 export class AuthStateService {
   private readonly _isLoggedIn = signal(false);
+  readonly token$ = signal<string | null>(null); // أو BehaviorSubject
   readonly isLoggedIn = computed(() => this._isLoggedIn());
   private tokenService = inject(TokenService);
   constructor() {
-    this._isLoggedIn.set(!!this.tokenService.getToken());
+    effect(() => {
+      this._isLoggedIn.set(!!this.tokenService.getToken());
+      // console.log(`isLoggedIn: ${this.isLoggedIn()}`);
+    });
   }
 
-  login() { this._isLoggedIn.set(true); }
-  logout() { this._isLoggedIn.set(false); this.tokenService.clear(); }
+  login() {
+    this._isLoggedIn.set(true);
+  }
+  logout() {
+    this._isLoggedIn.set(false);
+    this.tokenService.clear();
+  }
 }

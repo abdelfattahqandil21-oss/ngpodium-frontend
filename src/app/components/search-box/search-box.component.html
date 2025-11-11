@@ -1,0 +1,35 @@
+<div class="relative w-full">
+  <input
+    type="text"
+    [formControl]="searchControl"
+    placeholder="Search posts..."
+    (focus)="onFocus()"
+    class="w-full rounded px-4 py-2 bg-zinc-800/80 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-white/30"
+  />
+
+  <!-- @if (loader.smallLoading()) { -->
+    <div class="absolute right-3 top-1/2 -translate-y-1/2">
+      <div class="w-4 h-4 border-2 border-zinc-400 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  <!-- } -->
+
+  <!-- @let results = results$ | async; -->
+  <!-- @if (showResults && results?.length && searchControl.value?.trim()?.length) { -->
+    <ul
+      class="absolute left-0 right-0 mt-1 rounded border border-white/10 bg-zinc-900/95 divide-y divide-white/5 shadow-lg z-50 max-h-72 overflow-y-auto"
+      style="backdrop-filter: blur(6px);"
+    >
+      <!-- @for(post of results; track post.id) { -->
+        <li (click)="onResultSelected()" class="flex gap-3 p-2 hover:bg-white/5 cursor-pointer">
+          <img src="coverImg + post.coverImg" alt="post.header" class="h-12 w-20 object-cover rounded"/>
+          <div class="flex-1">
+            <p class="text-sm font-semibold text-white"> post.header </p>
+            <p class="text-xs text-zinc-400">
+              post.content ? post.content.split('').slice(0,80).join('') + '...' : '' 
+            </p>
+          </div>
+        </li>
+      <!-- } -->
+    </ul>
+  <!-- } -->
+</div>

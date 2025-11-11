@@ -1,0 +1,75 @@
+<header class="my-2 p-2 border-b border-zinc-800/60 backdrop-blur-xl shadow-lg shadow-black/50 transition-all duration-500">
+  <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-5">
+    <!-- Logo + Hamburger -->
+    <div class="flex w-full items-center justify-between md:w-auto">
+      <button
+        type="button"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-zinc-300 transition hover:border-white/30 hover:text-white md:hidden"
+        aria-label="Open menu"
+        (click)="toggleMenu()"
+      >
+        <i class="pi pi-bars"></i>
+      </button>
+
+      <a [routerLink]="['/']" class="flex items-center gap-3 text-3xl font-bold tracking-tight select-none">
+        <span class="bg-linear-to-r from-gray-200 via-zinc-100 to-zinc-400 bg-clip-text text-transparent drop-shadow-[0_1px_10px_rgba(255,255,255,0.15)]">
+          {{ logo }}
+        </span>
+      </a>
+    </div>
+
+    <!-- Search Box -->
+    <div class="flex-1 mx-4 md:mx-8">
+      <app-search-box></app-search-box>
+    </div>
+
+    <!-- Desktop Auth / Profile -->
+    <div class="hidden md:flex items-center gap-3">
+      <!-- Not logged in -->
+      @if (!isLoggedIn()) {
+        <a routerLink="/login" class="text-sm text-zinc-200 hover:text-white px-3 py-1 rounded-md border border-white/10 transition">Login</a>
+        <a routerLink="register" class="text-sm text-white bg-linear-to-r from-zinc-700 to-zinc-600 px-3 py-1 rounded-md hover:from-zinc-600 hover:to-zinc-500 transition">Register</a>
+      }
+
+      <!-- Logged in -->
+      @if (isLoggedIn()) {
+        <a [routerLink]="['/profile']" class="flex items-center gap-2 text-zinc-200 hover:text-white">
+          <img [src]="imgProfile() || '/assets/avatar.png'" alt="Avatar" class="h-10 w-10 rounded-full border border-white/10 object-cover"/>
+          <span class="hidden sm:inline text-sm">Profile</span>
+        </a>
+        <app-logout></app-logout>
+      }
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div
+    class="absolute top-full left-0 right-0 z-40 flex flex-col gap-3 rounded-md bg-zinc-900/95 backdrop-blur-md border border-white/10 p-3 md:hidden overflow-hidden transition-all duration-300 ease-out"
+    [style.maxHeight]="menuOpen() ? '500px' : '0'"
+    [style.opacity]="menuOpen() ? '1' : '0'"
+    [style.transform]="menuOpen() ? 'translateY(0)' : 'translateY(-10px)'"
+  >
+    <!-- Write post -->
+    <button
+      type="button"
+      class="w-full inline-flex items-center justify-center rounded-full bg-linear-to-r from-zinc-700 via-zinc-600 to-zinc-500 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-black/50 transition duration-300 hover:-translate-y-0.5 hover:from-zinc-600 hover:to-zinc-400 hover:shadow-[0_0_25px_rgba(255,255,255,0.12)] cursor-pointer"
+      (click)="onClickWrite()"
+    >
+      Write post <i class="pi pi-pen-to-square ml-2"></i>
+    </button>
+
+    <!-- Auth Buttons -->
+    @if (!isLoggedIn()) {
+      <a routerLink="/login" class="text-sm text-zinc-200 hover:text-white px-3 py-1 rounded-md border border-white/10 transition">Login</a>
+      <a routerLink="/register" class="text-sm text-white bg-linear-to-r from-zinc-700 to-zinc-600 px-3 py-1 rounded-md hover:from-zinc-600 hover:to-zinc-500 transition">Register</a>
+    }
+
+    @if (isLoggedIn()) {
+      <a [routerLink]="['/profile']" class="flex items-center gap-2 text-zinc-200 hover:text-white px-3 py-1 rounded-md border border-white/10">
+        <img src="imgProfile() || '/assets/avatar.png'" alt="Avatar" class="h-10 w-10 rounded-full border border-white/10 object-cover"/>
+        <span class="text-sm">Profile</span>
+      </a>
+      <app-logout></app-logout>
+    }
+  </div>
+</header>

@@ -1,3 +1,14 @@
-@import "primeicons/primeicons.css"; /* PrimeIcons */
 @import "tailwindcss"; /* TailwindCSS */
+@import "primeicons/primeicons.css"; /* PrimeIcons */
 
+/* ================== Root Variable ================== */
+:root {
+  --app-background: linear-gradient(135deg, #080808 0%, #0A0A0A 100%);
+}
+
+/* ================== Apply Background ================== */
+body {
+  background: var(--app-background);
+  min-height: 100vh;
+  color: white;
+}

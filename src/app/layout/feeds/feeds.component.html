@@ -1,0 +1,37 @@
+  <main
+    class="flex-1 mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-10 flex flex-col"
+  >
+<div class="mt-8 space-y-8">
+  <!-- Tabs -->
+  <div class="flex gap-3 border-b border-white/10 pb-3">
+    <button
+      class="px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200"
+      [class.bg-white/10]="activeTab() === 'all'"
+      [class.text-white]="activeTab() === 'all'"
+      [class.text-zinc-400]="activeTab() !== 'all'"
+      (click)="switchTab('all')"
+    >
+      <i class="pi pi-globe mr-1"></i> All Posts
+    </button>
+
+    @if (isLoggedIn()) {
+    <button
+      class="px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200"
+      [class.bg-white/10]="activeTab() === 'mine'"
+      [class.text-white]="activeTab() === 'mine'"
+      [class.text-zinc-400]="activeTab() !== 'mine'"
+      (click)="switchTab('mine')"
+    >
+      <i class="pi pi-user mr-1"></i> My Posts
+    </button>
+  }
+  </div>
+  @if (activeTab() === 'all') {
+    <!-- <app-loader></app-loader> -->
+    <app-feeds-global></app-feeds-global>
+  } @else {
+    <app-feeds-private></app-feeds-private>
+  }
+
+</div>
+  </main>

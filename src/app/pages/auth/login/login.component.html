@@ -1,0 +1,79 @@
+<div
+  class="min-h-screen flex items-center justify-center px-4 py-12"
+  style="background: var(--app-background)"
+>
+  <div class="w-full max-w-md">
+    <div
+      class="rounded-2xl border border-white/10 bg-linear-to-b from-zinc-900/90 to-zinc-950/90 backdrop-blur-xl p-8 shadow-2xl shadow-black/50"
+    >
+      
+      <div class="mb-8 text-center">
+        <h1
+          class="text-3xl font-bold bg-linear-to-r from-gray-200 via-zinc-100 to-zinc-400 bg-clip-text text-transparent mb-2"
+        >
+          Welcome Back
+        </h1>
+        <p class="text-sm text-zinc-400">Sign in to your NgPodium account</p>
+      </div>
+
+      <!-- FORM -->
+      <form [formGroup]="loginGb" (ngSubmit)="onSubmit()" class="space-y-5" autocomplete="off">
+        <!-- Email / Username -->
+        <div>
+          <label for="userNameOrEmail" class="block text-xs font-medium text-zinc-400 mb-1.5"
+            >Email or Username</label
+          >
+          <input
+            id="userNameOrEmail"
+            type="text"
+            formControlName="userNameOrEmail"
+            placeholder="Enter your email or username"
+            class="w-full rounded-lg border border-white/10 bg-zinc-900/50 px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-white/20 focus:outline-none focus:ring-1 focus:ring-white/10 transition"
+          />
+        </div>
+
+        <div>
+          <label for="password" class="block text-xs font-medium text-zinc-400 mb-1.5"
+            >Password</label
+          >
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Enter your password"
+            class="w-full rounded-lg border border-white/10 bg-zinc-900/50 px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-white/20 focus:outline-none focus:ring-1 focus:ring-white/10 transition"
+          />
+        </div>
+
+        
+
+        <button
+          type="submit"
+          [disabled]="loginGb.invalid || isLoading()"
+          class="w-full rounded-lg bg-linear-to-r from-zinc-700 via-zinc-600 to-zinc-500 px-5 py-3 font-semibold text-white shadow-lg shadow-black/50 transition duration-300 hover:-translate-y-0.5 hover:from-zinc-600 hover:to-zinc-400 hover:shadow-[0_0_25px_rgba(255,255,255,0.12)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+        >
+          @if(isLoading()){
+            <i class="pi pi-spinner animate-spin"></i>
+          }
+          @else{
+            Sign In
+          }
+        </button>
+      </form>
+
+
+
+      <div class="mt-6 text-center">
+        <p class="text-sm text-zinc-500">
+          Don't have an account?
+          <a
+            [routerLink]="['/register']"
+            class="ml-1 font-medium text-zinc-200 hover:text-white transition"
+          >
+            Create one
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

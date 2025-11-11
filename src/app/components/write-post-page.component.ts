@@ -104,7 +104,8 @@ import { IPost } from '../core/services/interfaces/posts.interface';
                     class="file-input"
                   />
                   <span class="upload-text">
-                    📁 Choose cover image
+                    <i class="pi pi-images"></i>
+                     Choose cover image
                   </span>
                 </label>
               }

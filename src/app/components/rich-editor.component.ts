@@ -44,7 +44,12 @@ interface ToolbarButton {
           class="toolbar-btn"
           (click)="btn.action()"
           [title]="btn.label">
-          {{ btn.icon || btn.label }}
+          @if (btn.icon) {
+            <i [class]="btn.icon" aria-hidden="true"></i>
+            <span class="sr-only">{{ btn.label }}</span>
+          } @else {
+            {{ btn.label }}
+          }
         </button>
       </div>
 
@@ -87,6 +92,9 @@ interface ToolbarButton {
       cursor: pointer;
       font-size: 14px;
       transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .toolbar-btn:hover {
@@ -98,6 +106,22 @@ interface ToolbarButton {
       background: #3b82f6;
       color: white;
       border-color: #3b82f6;
+    }
+
+    .toolbar-btn i {
+      font-size: 16px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     .editor-content {
@@ -239,13 +263,11 @@ export class RichEditorComponent implements OnInit, OnDestroy {
     return [
       {
         label: 'Bold',
-        icon: '𝐁',
         action: () => this.toggleFormat('bold'),
         isActive: () => this.isActive('bold'),
       },
       {
         label: 'Italic',
-        icon: '𝐼',
         action: () => this.toggleFormat('italic'),
         isActive: () => this.isActive('italic'),
       },
@@ -261,31 +283,31 @@ export class RichEditorComponent implements OnInit, OnDestroy {
       },
       {
         label: 'Code',
-        icon: '</>',
+        icon: 'pi pi-code',
         action: () => this.toggleFormat('codeBlock'),
         isActive: () => this.isActive('codeBlock'),
       },
       {
         label: 'Link',
-        icon: '🔗',
+        icon: 'pi pi-paperclip',
         action: () => this.insertLink(),
         isActive: () => this.isActive('link'),
       },
       {
         label: 'Image',
-        icon: '🖼️',
+        icon: 'pi pi-images',
         action: () => this.insertImage(),
         isActive: () => false,
       },
       {
         label: 'Bullet List',
-        icon: '•',
+        icon: 'pi pi-list',
         action: () => this.toggleFormat('bulletList'),
         isActive: () => this.isActive('bulletList'),
       },
       {
         label: 'Ordered List',
-        icon: '1.',
+        icon: 'pi pi-sort-numeric-down',
         action: () => this.toggleFormat('orderedList'),
         isActive: () => this.isActive('orderedList'),
       },

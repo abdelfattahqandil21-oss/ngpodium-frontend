@@ -1,27 +1,19 @@
 <div class="container mx-auto px-4 py-8">
   <!-- Header -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-white mb-2">My Posts</h1>
-    <p class="text-zinc-400">Manage your published articles</p>
-  </div>
-
-  <!-- Stats -->
-  @if (authState.profile()) {
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-      <div class="bg-zinc-800/50 rounded-lg p-4 border border-zinc-700">
-        <p class="text-sm text-zinc-400 mb-1">Total Posts</p>
-        <p class="text-2xl font-bold text-white">{{ postState.total() }}</p>
-      </div>
-      <div class="bg-zinc-800/50 rounded-lg p-4 border border-zinc-700">
-        <p class="text-sm text-zinc-400 mb-1">Current Page</p>
-        <p class="text-2xl font-bold text-white">{{ postState.currentPage() }} / {{ postState.totalPages() }}</p>
-      </div>
-      <div class="bg-zinc-800/50 rounded-lg p-4 border border-zinc-700">
-        <p class="text-sm text-zinc-400 mb-1">Posts per Page</p>
-        <p class="text-2xl font-bold text-white">{{ postState.limit() }}</p>
-      </div>
+  <div class="mb-8 flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-white mb-2">My Posts</h1>
+      <p class="text-zinc-400">Manage your published articles</p>
     </div>
-  }
+    
+    <!-- Total Posts Badge -->
+    @if (authState.profile() && postState.total() > 0) {
+      <div class="flex items-center gap-2 px-4 py-2 bg-zinc-800/50 rounded border border-zinc-700/50">
+        <span class="text-sm text-zinc-400">Total:</span>
+        <span class="text-xl font-bold text-white">{{ postState.total() }}</span>
+      </div>
+    }
+  </div>
 
   <!-- Loading State -->
   @if (postState.loading() && postState.posts().length === 0) {
@@ -66,9 +58,13 @@
           </div>
 
           <div class="space-y-3">
-            <h3 class="text-2xl font-bold tracking-tight text-white">{{ post.title }}</h3>
-            <p class="text-sm leading-relaxed text-zinc-400">
-              {{ post.content ? post.content.slice(0, 220) + '...' : '' }}
+            <a [routerLink]="['/post', post.slug]">
+              <h3 class="text-2xl font-bold tracking-tight text-white hover:text-blue-400 transition-colors line-clamp-2">
+                {{ post.title }}
+              </h3>
+            </a>
+            <p class="text-sm leading-relaxed text-zinc-400 line-clamp-3">
+              {{ post.content ? post.content.slice(0, 220) : 'No content available' }}{{ post.content && post.content.length > 220 ? '...' : '' }}
             </p>
           </div>
 

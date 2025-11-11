@@ -44,12 +44,11 @@ export class FeedsPrivateComponent implements OnInit {
   }
 
   /**
-   * Load more posts
+   * Load more posts (infinite scroll)
    */
   loadMore() {
-    const userId = this.authState.profile()?.id;
-    if (userId && this.postState.hasMore() && !this.postState.loading()) {
-      this.postState.goToPage(this.postState.currentPage() + 1);
+    if (this.postState.hasMore() && !this.postState.loading()) {
+      this.postState.loadMore();
     }
   }
 

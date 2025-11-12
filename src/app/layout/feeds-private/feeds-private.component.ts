@@ -36,7 +36,7 @@ export class FeedsPrivateComponent implements OnInit {
     if (userId) {
       this.postState.loadMyPosts(userId, {
         page: 1,
-        limit: 1,
+        limit: 5,
         orderBy: 'createdAt',
         order: 'desc',
       });

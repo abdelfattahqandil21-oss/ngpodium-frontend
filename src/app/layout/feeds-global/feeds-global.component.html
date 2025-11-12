@@ -54,31 +54,36 @@
   }
 
   <!-- Infinite scroll status -->
-  <div class="h-16 flex flex-col items-center justify-center text-zinc-400 text-sm select-none">
-    @if (!postState.loading() && postState.posts().length === 0) {
-      <div class="flex items-center gap-2 text-zinc-400 animate-fade-in">
-        <i class="pi pi-inbox text-lg text-zinc-500"></i>
-        <span class="font-medium tracking-wide">No posts yet</span>
-      </div>
-    }
-    @else if (postState.loading()) {
-      <div class="flex items-center gap-3 text-[11px] uppercase tracking-[0.28em] text-zinc-500">
-        Loading
-        <div class="flex gap-2">
-          <span class="h-2.5 w-2.5 rounded-full bg-zinc-400/70 animate-bounce"></span>
-          <span class="h-2.5 w-2.5 rounded-full bg-zinc-500/70 animate-bounce delay-200"></span>
-          <span class="h-2.5 w-2.5 rounded-full bg-zinc-600/60 animate-bounce delay-400"></span>
+    <div  class="h-16 flex flex-col items-center justify-center text-zinc-400 text-sm select-none">
+      @if (!postState.loading() && postState.posts().length === 0) {
+        <div class="flex items-center gap-2 text-zinc-400 animate-fade-in">
+          <i class="pi pi-inbox text-lg text-zinc-500"></i>
+          <span class="font-medium tracking-wide">No posts yet</span>
         </div>
-      </div>
-    }
-    @else if (!postState.hasMore()) {
-      <div class="flex items-center gap-2 text-emerald-500">
-        <i class="pi pi-check-circle text-lg"></i>
-        <span class="font-semibold tracking-wide">You've reached the end</span>
-      </div>
-    }
-    @else if (postState.hasMore()) {
-      <span class="text-xs uppercase tracking-[0.28em] text-zinc-500">Keep scrolling…</span>
-    }
-  </div>
+      }
+      @else if (postState.loading()) {
+        <div class="flex items-center gap-3 text-[11px] uppercase tracking-[0.28em] text-zinc-500">
+          Loading
+          <div class="flex gap-2">
+            <span class="h-2.5 w-2.5 rounded-full bg-zinc-400/70 animate-bounce"></span>
+            <span class="h-2.5 w-2.5 rounded-full bg-zinc-500/70 animate-bounce delay-200"></span>
+            <span class="h-2.5 w-2.5 rounded-full bg-zinc-600/60 animate-bounce delay-400"></span>
+          </div>
+        </div>
+      }
+      @else if (!postState.hasMore()) {
+        <div class="flex items-center gap-2 text-emerald-500">
+          <i class="pi pi-check-circle text-lg"></i>
+          <span class="font-semibold tracking-wide">You've reached the end</span>
+        </div>
+      }
+      @else if (postState.hasMore()) {
+        <button 
+          (click)="loadMore()" 
+          class="px-4 py-2 bg-zinc-800 text-white rounded hover:bg-zinc-700 transition-colors"
+        >
+          Load More
+        </button>
+      }
+    </div>
 </div>

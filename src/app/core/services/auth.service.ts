@@ -74,7 +74,7 @@ export class AuthService {
     }
 
     const expiresInMs = +expiresIn * 1000;
-    const refreshBefore = Math.max(expiresInMs - 60_000, 60_000);
+    const refreshBefore = Math.max(expiresInMs - (15 * 60 * 1000), 15_000);
 
     this.stopAutoRefresh();
 
@@ -87,6 +87,8 @@ export class AuthService {
         next: (res) => {
           this.tokenService.setToken(res.access_token);
           console.log('Token refreshed successfully');
+          console.log(`${1800 / 60} seconds before expiration`);
+          
         }
       });
   }

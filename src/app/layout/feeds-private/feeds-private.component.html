@@ -88,7 +88,7 @@
     }
 
     <!-- Infinite scroll sentinel -->
-    <div #infiniteSentinel class="h-16 flex flex-col items-center justify-center text-zinc-400 text-sm select-none">
+    <div  class="h-16 flex flex-col items-center justify-center text-zinc-400 text-sm select-none">
       @if (!postState.loading() && postState.posts().length === 0) {
         <div class="flex items-center gap-2 text-zinc-400 animate-fade-in">
           <i class="pi pi-inbox text-lg text-zinc-500"></i>

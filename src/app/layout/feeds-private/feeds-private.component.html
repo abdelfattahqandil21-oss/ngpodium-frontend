@@ -40,6 +40,10 @@
             [src]="getCoverImageUrl(post.coverImage)"
             [alt]="post.title"
             class="h-full w-full object-cover transition-transform duration-500 ease-in-out hover:scale-105"
+            width="640"
+            height="360"
+            loading="lazy"
+            decoding="async"
           />
         </div>
 
@@ -50,6 +54,10 @@
               [src]="authState.profile()?.image ? ('http://localhost:3000/uploads/profile/' + authState.profile()!.image) : 'assets/avatar.png'"
               [alt]="authState.profile()?.username"
               class="flex h-11 w-11 items-center justify-center rounded-full bg-linear-to-br from-[#3f3f46] to-[#27272a] text-base font-semibold text-white"
+              width="44"
+              height="44"
+              loading="lazy"
+              decoding="async"
             />
             <div>
               <p class="text-sm font-semibold text-zinc-100">{{ authState.profile()?.username }}</p>

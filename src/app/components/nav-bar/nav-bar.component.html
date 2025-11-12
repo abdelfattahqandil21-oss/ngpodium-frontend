@@ -44,7 +44,7 @@
       <!-- Logged in -->
       @if (isLoggedIn()) {
         <a [routerLink]="['/profile']" class="flex items-center gap-2 text-zinc-200 hover:text-white">
-          <img [src]="imgProfile() || '/assets/avatar.png'" alt="Avatar" class="h-10 w-10 rounded-full border border-white/10 object-cover"/>
+          <img [src]="imgProfile() || '/assets/avatar.png'" alt="Avatar" class="h-10 w-10 rounded-full border border-white/10 object-cover" width="40" height="40"/>
           <span class="hidden sm:inline text-sm">{{nameProfile()}}</span>
         </a>
         <app-logout></app-logout>
@@ -78,7 +78,7 @@
 
     @if (isLoggedIn()) {
       <a [routerLink]="['/profile']" class="flex items-center gap-2 text-zinc-200 hover:text-white px-3 py-1 rounded-md border border-white/10">
-        <img [src]="imgProfile() || '/assets/avatar.png'" alt="Avatar" class="h-10 w-10 rounded-full border border-white/10 object-cover"/>
+        <img [src]="imgProfile() || '/assets/avatar.png'" alt="Avatar" class="h-10 w-10 rounded-full border border-white/10 object-cover" width="40" height="40"/>
         <span class="text-sm">Profile</span>
       </a>
       <app-logout></app-logout>

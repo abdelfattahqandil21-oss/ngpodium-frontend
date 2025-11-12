@@ -39,6 +39,7 @@
     "lowlight": "^3.3.0",
     "primeicons": "^7.0.0",
     "rxjs": "~7.8.0",
+    "serve": "^14.2.5",
     "tslib": "^2.3.0"
   },
   "devDependencies": {

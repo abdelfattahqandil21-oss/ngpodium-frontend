@@ -87,12 +87,23 @@ export class SearchBoxComponent {
   }
 
   /**
-   * Get truncated content for preview
+   * Clean HTML content and return a preview snippet
    */
-  getTruncatedContent(content: string, maxLength: number = 80): string {
-    if (!content) return '';
-    return content.length > maxLength 
-      ? content.substring(0, maxLength) + '...' 
-      : content;
+  getContentPreview(content: string | null | undefined, limit = 80, fallback = 'No content available'): string {
+    if (!content) {
+      return fallback;
+    }
+
+    const text = content
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (!text) {
+      return fallback;
+    }
+
+    return text.length > limit ? text.slice(0, limit).trimEnd() + '...' : text;
   }
 }

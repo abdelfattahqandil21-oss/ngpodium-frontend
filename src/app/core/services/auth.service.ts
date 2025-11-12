@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../env/env';
 import {
@@ -14,7 +14,6 @@ import {
   UploadProfileResponse,
 } from './interfaces/auth.interface';
 import { TokenService } from './token.service';
-import { interval, Subscription, switchMap, filter } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -24,14 +23,12 @@ export class AuthService {
   private readonly tokenService = inject(TokenService);
   private readonly Base_URL = environment.apiUrl;
 
-  private refreshSub?: Subscription;
-
-  constructor() {
-    const token = this.tokenService.getToken();
-    if (token) {
-      this.startAutoRefresh();
-    }
+  isUnauthorized = signal(false);
+  setUnauthorized(value: boolean) {
+    this.isUnauthorized.set(value);
   }
+
+  constructor() {}
 
   login(credentials: ILogin) {
     return this.http.post<LoginResponse>(`${this.Base_URL}/auth/login`, credentials);
@@ -42,12 +39,13 @@ export class AuthService {
   }
 
   logout() {
-    this.stopAutoRefresh();
+    this.tokenService.removeToken();
+    this.setUnauthorized(true);
     return this.http.post<LogoutResponse>(`${this.Base_URL}/auth/logout`, {});
   }
 
-  refreshToken(token: string) {
-    return this.http.post<RefreshTokenResponse>(`${this.Base_URL}/auth/refresh`, { token });
+  refreshToken(refreshToken: string) {
+    return this.http.post<RefreshTokenResponse>(`${this.Base_URL}/auth/refresh`, { token: refreshToken });
   }
 
   getProfile() {
@@ -61,40 +59,6 @@ export class AuthService {
   uploadProfileImage(file: File) {
     const formData = new FormData();
     formData.append('file', file);
-
     return this.http.post<UploadProfileResponse>(`${this.Base_URL}/upload/profile`, formData);
-  }
-
-
-  startAutoRefresh() {
-    const expiresIn = this.tokenService.getExpiresIn();
-    if (!expiresIn) {
-      console.error('No expiration time found');
-      return this.stopAutoRefresh();
-    }
-
-    const expiresInMs = +expiresIn * 1000;
-    const refreshBefore = Math.max(expiresInMs - (15 * 60 * 1000), 15_000);
-
-    this.stopAutoRefresh();
-
-    this.refreshSub = interval(refreshBefore)
-      .pipe(
-        filter(() => !!this.tokenService.getToken()),
-        switchMap(() => this.refreshToken(this.tokenService.getRefreshToken()!))
-      )
-      .subscribe({
-        next: (res) => {
-          this.tokenService.setToken(res.access_token);
-          console.log('Token refreshed successfully');
-          console.log(`${1800 / 60} seconds before expiration`);
-          
-        }
-      });
-  }
-
-  stopAutoRefresh() {
-    this.refreshSub?.unsubscribe();
-    this.refreshSub = undefined;
   }
 }

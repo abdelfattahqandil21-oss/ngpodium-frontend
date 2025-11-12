@@ -47,7 +47,7 @@ export class RegisterComponent {
       next: (res: RegisterResponse) => {
         this.TokenSvc.setToken(res.access_token);
         this.TokenSvc.setRefreshToken(res.refresh_token);
-        this.TokenSvc.setExpiresIn(res.expiresIn.toString());
+        this.TokenSvc.setExpiresIn(res.expiresIn);
         this.isLoading.set(false);
         this.router.navigate(['/']);
       },

@@ -40,7 +40,8 @@ export class LoginComponent implements OnInit {
       next: (res: LoginResponse) => {
           this.TokenSvc.setToken(res.access_token);
         this.TokenSvc.setRefreshToken(res.refresh_token);
-        this.TokenSvc.setExpiresIn(res.expiresIn.toString());
+        this.TokenSvc.setExpiresIn(res.expiresIn);
+        this.TokenSvc.setExpiresAt(res.expiresAt);
         this.router.navigate(['/']);
         this.isLoading.set(false);
       },

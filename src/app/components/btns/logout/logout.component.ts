@@ -15,7 +15,7 @@ export class LogoutComponent {
   private readonly authSSVC = inject(AuthStateService);
   private readonly router = inject(Router);
   onLogout(): void {
-    this.tokenService.clear();
+    this.tokenService.removeToken();
     this.authSSVC.isLoggedIn;
     this.router.navigate(['/']);
   }

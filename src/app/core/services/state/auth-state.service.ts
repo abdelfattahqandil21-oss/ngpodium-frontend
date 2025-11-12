@@ -27,7 +27,7 @@ export class AuthStateService {
   }
   logout() {
     this._isLoggedIn.set(false);
-    this.tokenService.clear();
+    this.tokenService.removeToken();
   }
   getProfile() {
     this.authService.getProfile().subscribe({

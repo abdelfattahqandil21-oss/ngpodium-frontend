@@ -1,9 +1,9 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000/api/v1',
-  imgUrl : 'http://localhost:3000/uploads/',
-  profile : 'http://localhost:3000/uploads/profile/',
-  coverImg : 'http://localhost:3000/uploads/cover/',
-  serchImg : 'http://localhost:3000',
-  localUrl : 'http://localhost:3000'
+ apiUrl: 'https://ngpodium-backend-production.up.railway.app/api/v1',
+  imgUrl: 'https://ngpodium-backend-production.up.railway.app/uploads/',
+  profile: 'https://ngpodium-backend-production.up.railway.app/uploads/profile/',
+  coverImg: 'https://ngpodium-backend-production.up.railway.app/uploads/cover/',
+  serchImg: 'https://ngpodium-backend-production.up.railway.app',
+  prodUrl: 'https://ngpodium-backend-production.up.railway.app'
 };

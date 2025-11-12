@@ -9,7 +9,7 @@ export function profileImageUrl(image: string | null | undefined, profileBaseUrl
   }
 
   if (imagePath.startsWith('/uploads/profile/')) {
-    return environment.localUrl + imagePath;
+    return environment.prodUrl + imagePath;
   }
 
   return profileBaseUrl + imagePath;
@@ -25,7 +25,7 @@ export function coverImageUrl(image: string | null | undefined, coverBaseUrl: st
   }
 
   if (imagePath.startsWith('/uploads/cover/')) {
-    return environment.localUrl + imagePath;
+    return environment.prodUrl + imagePath;
   }
 
   return coverBaseUrl + imagePath;

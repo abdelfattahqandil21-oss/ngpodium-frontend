@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, AfterViewChecked, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
@@ -6,6 +6,24 @@ import { PostStateService } from '../../core/services/state/post-state.service';
 import { AuthStateService } from '../../core/services/state/auth-state.service';
 import { environment } from '../../../env/env';
 import { IPost } from '../../core/services/interfaces/posts.interface';
+import hljs from 'highlight.js/lib/core';
+import javascript from 'highlight.js/lib/languages/javascript';
+import typescript from 'highlight.js/lib/languages/typescript';
+import python from 'highlight.js/lib/languages/python';
+import jsonLang from 'highlight.js/lib/languages/json';
+import xml from 'highlight.js/lib/languages/xml';
+import css from 'highlight.js/lib/languages/css';
+
+hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('js', javascript);
+hljs.registerLanguage('typescript', typescript);
+hljs.registerLanguage('ts', typescript);
+hljs.registerLanguage('python', python);
+hljs.registerLanguage('py', python);
+hljs.registerLanguage('json', jsonLang);
+hljs.registerLanguage('html', xml);
+hljs.registerLanguage('xml', xml);
+hljs.registerLanguage('css', css);
 
 @Component({
   selector: 'app-post-detail',
@@ -106,6 +124,7 @@ import { IPost } from '../../core/services/interfaces/posts.interface';
 
           <!-- Content -->
           <div 
+            #postContent
             class="prose prose-invert prose-lg max-w-none"
             [innerHTML]="post()!.content"
           ></div>
@@ -153,14 +172,87 @@ import { IPost } from '../../core/services/interfaces/posts.interface';
     }
 
     :host ::ng-deep .prose pre {
-      background: #18181b;
-      border: 1px solid #3f3f46;
       border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.7);
     }
 
-    :host ::ng-deep .prose pre code {
-      background: none;
-      color: #e4e4e7;
+    :host ::ng-deep .prose pre code.hljs {
+      display: block;
+      padding: 1.25rem;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      border-radius: 8px;
+      font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 0.95rem;
+      line-height: 1.65;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    :host ::ng-deep .prose pre code.hljs::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    :host ::ng-deep .prose pre code.hljs::-webkit-scrollbar-thumb {
+      background: rgba(244, 244, 245, 0.12);
+      border-radius: 999px;
+    }
+
+    :host ::ng-deep .prose pre code .hljs-keyword,
+    :host ::ng-deep .prose pre code .hljs-selector-tag,
+    :host ::ng-deep .prose pre code .hljs-subst {
+      color: #569cd6;
+    }
+
+    :host ::ng-deep .prose pre code .hljs-number,
+    :host ::ng-deep .prose pre code .hljs-literal,
+    :host ::ng-deep .prose pre code .hljs-variable,
+    :host ::ng-deep .prose pre code .hljs-template-variable {
+      color: #b5cea8;
+    }
+
+    :host ::ng-deep .prose pre code .hljs-string,
+    :host ::ng-deep .prose pre code .hljs-doctag {
+      color: #ce9178;
+    }
+
+    :host ::ng-deep .prose pre code .hljs-title,
+    :host ::ng-deep .prose pre code .hljs-section {
+      color: #dcdcaa;
+    }
+
+    :host ::ng-deep .prose pre code .hljs-comment,
+    :host ::ng-deep .prose pre code .hljs-quote {
+      color: #6a9955;
+      font-style: italic;
+    }
+
+    :host ::ng-deep .prose pre code .hljs-attr,
+    :host ::ng-deep .prose pre code .hljs-attribute,
+    :host ::ng-deep .prose pre code .hljs-selector-id,
+    :host ::ng-deep .prose pre code .hljs-selector-class {
+      color: #9cdcfe;
+    }
+
+    :host ::ng-deep .prose pre code .hljs-built_in,
+    :host ::ng-deep .prose pre code .hljs-builtin-name,
+    :host ::ng-deep .prose pre code .hljs-selector-attr,
+    :host ::ng-deep .prose pre code .hljs-selector-pseudo {
+      color: #c586c0;
+    }
+
+    :host ::ng-deep .prose pre code .hljs-meta {
+      color: #d4d4d4;
+    }
+
+    :host ::ng-deep .prose pre code .hljs-symbol,
+    :host ::ng-deep .prose pre code .hljs-name,
+    :host ::ng-deep .prose pre code .hljs-bullet {
+      color: #d7ba7d;
+    }
+
+    :host ::ng-deep .prose pre code .hljs-link {
+      text-decoration: underline;
     }
 
     :host ::ng-deep .prose img {
@@ -169,7 +261,7 @@ import { IPost } from '../../core/services/interfaces/posts.interface';
     }
   `]
 })
-export class PostDetailComponent implements OnInit {
+export class PostDetailComponent implements OnInit, AfterViewChecked {
   readonly postState = inject(PostStateService);
   readonly authState = inject(AuthStateService);
   private readonly route = inject(ActivatedRoute);
@@ -179,6 +271,9 @@ export class PostDetailComponent implements OnInit {
   readonly profileImg = environment.profile;
   readonly demoImg = 'assets/avatar.png';
   readonly post = signal<IPost | null>(null);
+  private highlightApplied = false;
+  private highlightRetryCount = 0;
+  @ViewChild('postContent') postContent?: ElementRef<HTMLElement>;
 
   ngOnInit() {
     // Load user profile if not loaded
@@ -200,17 +295,58 @@ export class PostDetailComponent implements OnInit {
         console.log('Post loaded:', post);
         console.log('Post author:', post.author);
         this.post.set(post);
-        
+        this.highlightApplied = false;
+        this.highlightRetryCount = 0;
+
         // Check ownership after post is loaded
         setTimeout(() => {
           console.log('Checking ownership after load...');
           console.log('isOwner result:', this.isOwner());
         }, 100);
+
+        this.scheduleHighlightRetry();
       },
       error: (error) => {
         console.error('Error loading post:', error);
       }
     });
+  }
+
+  ngAfterViewChecked(): void {
+    if (!this.highlightApplied && this.post()) {
+      this.scheduleHighlightRetry();
+    }
+  }
+
+  private applySyntaxHighlighting(): void {
+    const contentElement = this.postContent?.nativeElement;
+    if (!contentElement) {
+      return;
+    }
+
+    const codeBlocks = contentElement.querySelectorAll('pre code');
+    if (!codeBlocks.length) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      codeBlocks.forEach((block) => {
+        const element = block as HTMLElement;
+        hljs.highlightElement(element);
+      });
+
+      this.highlightApplied = true;
+      this.highlightRetryCount = 0;
+    });
+  }
+
+  private scheduleHighlightRetry(): void {
+    if (this.highlightApplied || this.highlightRetryCount >= 5) {
+      return;
+    }
+
+    this.highlightRetryCount += 1;
+    setTimeout(() => this.applySyntaxHighlighting(), 50);
   }
 
   isOwner(): boolean {
@@ -300,4 +436,5 @@ export class PostDetailComponent implements OnInit {
       return this.profileImg + imagePath;
     }
   }
+
 }

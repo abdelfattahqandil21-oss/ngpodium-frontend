@@ -1,7 +1,7 @@
 <header class="fixed top-0 left-0 right-0 p-2 border-b border-zinc-800/60 backdrop-blur-xl bg-zinc-950/90 shadow-lg shadow-black/50 transition-all duration-500 z-50">
-  <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-5">
+  <div class="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-4 md:flex-nowrap md:gap-5">
     <!-- Logo + Hamburger -->
-    <div class="flex w-full items-center justify-between md:w-auto">
+    <div class="order-1 flex w-full items-center justify-between md:order-1 md:w-auto md:justify-start">
       <button
         type="button"
         class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-zinc-300 transition hover:border-white/30 hover:text-white md:hidden"
@@ -19,12 +19,12 @@
     </div>
 
     <!-- Search Box -->
-    <div class="flex-1 mx-4 md:mx-8">
+    <div class="order-3 w-full md:order-2 md:mx-8 md:flex-1">
       <app-search-box></app-search-box>
     </div>
 
     <!-- Desktop Auth / Profile -->
-    <div class="hidden md:flex items-center gap-3">
+    <div class="order-2 hidden w-full items-center justify-end gap-3 md:order-3 md:flex md:w-auto">
       <!-- Write Post Button (Logged in only) -->
       @if (isLoggedIn()) {
         <a 

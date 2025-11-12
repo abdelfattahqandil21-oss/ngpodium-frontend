@@ -37,20 +37,21 @@ interface ToolbarButton {
     <div class="editor-container">
       <!-- Toolbar -->
       <div class="toolbar">
-        <button
-          *ngFor="let btn of toolbarButtons()"
-          type="button"
-          [class.active]="btn.isActive()"
-          class="toolbar-btn"
-          (click)="btn.action()"
-          [title]="btn.label">
+        @for(btn of toolbarButtons(); track btn.label) {
+          <button
+            type="button"
+            [class.active]="btn.isActive()"
+            class="toolbar-btn"
+            (click)="btn.action()"
+            [title]="btn.label">
           @if (btn.icon) {
             <i [class]="btn.icon" aria-hidden="true"></i>
             <span class="sr-only">{{ btn.label }}</span>
           } @else {
             {{ btn.label }}
           }
-        </button>
+          </button>
+        }
       </div>
 
       <!-- Editor -->
@@ -164,22 +165,88 @@ interface ToolbarButton {
     }
 
     :host ::ng-deep .ProseMirror pre {
-      background: #0c0c0f;
-      border: 1px solid #3f3f46;
-      border-radius: 6px;
-      padding: 16px;
-      margin: 12px 0;
-      overflow-x: auto;
-      position: relative;
+      margin: 16px 0;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.7);
     }
 
     :host ::ng-deep .ProseMirror pre code {
-      background: none;
-      color: #e4e4e7;
-      font-family: 'Fira Code', 'Courier New', monospace;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', monospace;
       font-size: 13px;
-      line-height: 1.6;
+      line-height: 1.65;
       display: block;
+      padding: 18px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+    }
+
+    :host ::ng-deep .ProseMirror pre code::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    :host ::ng-deep .ProseMirror pre code::-webkit-scrollbar-thumb {
+      background: rgba(244, 244, 245, 0.12);
+      border-radius: 999px;
+    }
+
+    :host ::ng-deep .ProseMirror pre code .hljs-keyword,
+    :host ::ng-deep .ProseMirror pre code .hljs-selector-tag,
+    :host ::ng-deep .ProseMirror pre code .hljs-subst {
+      color: #569cd6;
+    }
+
+    :host ::ng-deep .ProseMirror pre code .hljs-number,
+    :host ::ng-deep .ProseMirror pre code .hljs-literal,
+    :host ::ng-deep .ProseMirror pre code .hljs-variable,
+    :host ::ng-deep .ProseMirror pre code .hljs-template-variable {
+      color: #b5cea8;
+    }
+
+    :host ::ng-deep .ProseMirror pre code .hljs-string,
+    :host ::ng-deep .ProseMirror pre code .hljs-doctag {
+      color: #ce9178;
+    }
+
+    :host ::ng-deep .ProseMirror pre code .hljs-title,
+    :host ::ng-deep .ProseMirror pre code .hljs-section {
+      color: #dcdcaa;
+    }
+
+    :host ::ng-deep .ProseMirror pre code .hljs-comment,
+    :host ::ng-deep .ProseMirror pre code .hljs-quote {
+      color: #6a9955;
+      font-style: italic;
+    }
+
+    :host ::ng-deep .ProseMirror pre code .hljs-attr,
+    :host ::ng-deep .ProseMirror pre code .hljs-attribute,
+    :host ::ng-deep .ProseMirror pre code .hljs-selector-id,
+    :host ::ng-deep .ProseMirror pre code .hljs-selector-class {
+      color: #9cdcfe;
+    }
+
+    :host ::ng-deep .ProseMirror pre code .hljs-built_in,
+    :host ::ng-deep .ProseMirror pre code .hljs-builtin-name,
+    :host ::ng-deep .ProseMirror pre code .hljs-selector-attr,
+    :host ::ng-deep .ProseMirror pre code .hljs-selector-pseudo {
+      color: #c586c0;
+    }
+
+    :host ::ng-deep .ProseMirror pre code .hljs-meta {
+      color: #d4d4d4;
+    }
+
+    :host ::ng-deep .ProseMirror pre code .hljs-symbol,
+    :host ::ng-deep .ProseMirror pre code .hljs-name,
+    :host ::ng-deep .ProseMirror pre code .hljs-bullet {
+      color: #d7ba7d;
+    }
+
+    :host ::ng-deep .ProseMirror pre code .hljs-link {
+      text-decoration: underline;
     }
 
     :host ::ng-deep .ProseMirror code {

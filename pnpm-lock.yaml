@@ -44,6 +44,9 @@ importers:
       '@tiptap/starter-kit':
         specifier: ^3.10.5
         version: 3.10.5
+      highlight.js:
+        specifier: ^11.9.0
+        version: 11.11.1
       jwt-decode:
         specifier: ^4.0.0
         version: 4.0.0

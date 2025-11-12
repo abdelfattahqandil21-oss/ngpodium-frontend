@@ -51,7 +51,7 @@
         <div class="flex-1 space-y-4 md:order-1">
           <div class="flex items-center gap-3">
             <img
-              [src]="authState.profile()?.image ? ('http://localhost:3000/uploads/profile/' + authState.profile()!.image) : 'assets/avatar.png'"
+              [src]="profileImg()"
               [alt]="authState.profile()?.username"
               class="flex h-11 w-11 items-center justify-center rounded-full bg-linear-to-br from-[#3f3f46] to-[#27272a] text-base font-semibold text-white"
               width="44"

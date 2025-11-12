@@ -1,11 +1,11 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { AuthStateService } from '../../core/services/state/auth-state.service';
 import { PostStateService } from '../../core/services/state/post-state.service';
 import { environment } from '../../../env/env';
-import { coverImageUrl } from '../../shared/utils/image-url.util';
+import { coverImageUrl, profileImageUrl } from '../../shared/utils/image-url.util';
 
 @Component({
   selector: 'app-feeds-private',
@@ -19,6 +19,12 @@ export class FeedsPrivateComponent implements OnInit {
   readonly postState = inject(PostStateService);
   readonly imgcovered = environment.coverImg;
   readonly demoImg = 'assets/avatar.png';
+
+  // Computed profile image URL
+  readonly profileImg = computed(() => {
+    const profileData = this.authState.profile();
+    return profileImageUrl(profileData?.image, environment.profile, '/assets/avatar.png');
+  });
 
   ngOnInit() {
     // Load user profile if not loaded

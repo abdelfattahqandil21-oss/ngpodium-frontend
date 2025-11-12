@@ -13,6 +13,10 @@ import python from 'highlight.js/lib/languages/python';
 import jsonLang from 'highlight.js/lib/languages/json';
 import xml from 'highlight.js/lib/languages/xml';
 import css from 'highlight.js/lib/languages/css';
+import csharp from 'highlight.js/lib/languages/csharp';
+import java from 'highlight.js/lib/languages/java';
+import ruby from 'highlight.js/lib/languages/ruby';
+
 
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('js', javascript);
@@ -24,6 +28,11 @@ hljs.registerLanguage('json', jsonLang);
 hljs.registerLanguage('html', xml);
 hljs.registerLanguage('xml', xml);
 hljs.registerLanguage('css', css);
+hljs.registerLanguage('csharp', csharp);
+hljs.registerLanguage('cs', csharp);
+hljs.registerLanguage('java', java);
+hljs.registerLanguage('ruby', ruby);
+
 
 @Component({
   selector: 'app-post-detail',

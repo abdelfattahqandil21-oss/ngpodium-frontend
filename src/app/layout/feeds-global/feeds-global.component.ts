@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, effect, inject, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, effect, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { PostStateService } from '../../core/services/state/post-state.service';
 import { DatePipe, CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -8,7 +8,8 @@ import { environment } from '../../../env/env';
   selector: 'app-feeds-global',
   imports: [CommonModule, DatePipe, RouterLink],
   templateUrl: './feeds-global.component.html',
-  styleUrls: ['./feeds-global.component.css'], // صححتها
+  styleUrls: ['./feeds-global.component.css'],
+  changeDetection : ChangeDetectionStrategy.OnPush
 })
 export class FeedsGlobalComponent implements OnInit, OnDestroy {
   readonly imgcovered = environment.coverImg;
@@ -122,6 +123,25 @@ export class FeedsGlobalComponent implements OnInit, OnDestroy {
     }
 
     return url;
+  }
+
+
+  getContentPreview(content: string | null | undefined, limit = 220, fallback = ''): string {
+    if (!content) {
+      return fallback;
+    }
+
+    const text = content
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (!text) {
+      return fallback;
+    }
+
+    return text.length > limit ? text.slice(0, limit).trimEnd() + '...' : text;
   }
 }
 

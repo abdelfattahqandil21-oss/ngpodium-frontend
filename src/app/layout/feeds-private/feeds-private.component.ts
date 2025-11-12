@@ -92,4 +92,22 @@ export class FeedsPrivateComponent implements OnInit {
       return this.imgcovered + imagePath;
     }
   }
+
+  getContentPreview(content: string | null | undefined, limit = 220, fallback = 'No content available'): string {
+    if (!content) {
+      return fallback;
+    }
+
+    const text = content
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (!text) {
+      return fallback;
+    }
+
+    return text.length > limit ? text.slice(0, limit).trimEnd() + '...' : text;
+  }
 }

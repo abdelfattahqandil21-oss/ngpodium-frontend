@@ -577,7 +577,7 @@ export class WritePostPageComponent {
       return baseUrl + path;
     } else if (path.startsWith('/uploads/')) {
       // Full path: /uploads/cover/image.webp
-      return 'http://localhost:3000' + path;
+      return environment.prodUrl + path;
     } else {
       // Other path
       return baseUrl + path;

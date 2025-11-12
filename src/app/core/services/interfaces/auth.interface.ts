@@ -68,7 +68,25 @@ export interface ProfileResponse{
    image : string
    nickname : string
    phone : string
+   headline?: string
    createdAt : string
    updatedAt : string
 }
 	
+
+export interface UpdateProfileRequest {
+   username?: string;
+   nickname?: string | null;
+   phone?: string | null;
+   image?: string | null;
+   headline?: string | null;
+   email?: string;
+}
+
+export type UpdateProfileResponse = ProfileResponse;
+
+export interface UploadProfileResponse {
+   filename: string;
+   url?: string;
+}
+

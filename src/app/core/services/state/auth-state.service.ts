@@ -1,7 +1,8 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { TokenService } from '../token.service';
-import { ProfileResponse } from '../interfaces/auth.interface';
+import { ProfileResponse, UpdateProfileRequest } from '../interfaces/auth.interface';
 import { AuthService } from '../auth.service';
+import { tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -39,5 +40,23 @@ export class AuthStateService {
         this._profile.set(null);
       }
     });
+  }
+
+  updateProfile(payload: UpdateProfileRequest) {
+    const currentProfile = this._profile();
+
+    if (!currentProfile) {
+      throw new Error('Cannot update profile before loading it.');
+    }
+
+    return this.authService.updateProfile(currentProfile.id, payload).pipe(
+      tap((res) => {
+        this._profile.set(res);
+      })
+    );
+  }
+
+  uploadProfileImage(file: File) {
+    return this.authService.uploadProfileImage(file);
   }
 }

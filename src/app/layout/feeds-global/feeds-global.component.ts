@@ -18,7 +18,7 @@ export class FeedsGlobalComponent implements OnInit {
 
   ngOnInit() {
     // Load initial feed
-    this.postState.loadFeed({ offset: 0, limit: 10 });
+    this.postState.loadFeed({ offset: 0, limit: 1 });
   }
 
   /**

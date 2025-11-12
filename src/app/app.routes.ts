@@ -22,6 +22,14 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/post-detail/post-detail.component').then((m) => m.PostDetailComponent),
   },
   {
+    path: 'profile',
+    loadComponent: () => import('./pages/profile/profile.component').then((m) => m.ProfilePageComponent),
+  },
+  {
+    path: 'profile/edit',
+    loadComponent: () => import('./pages/profile-edit/profile-edit.component').then((m) => m.ProfileEditPageComponent),
+  },
+  {
     path: 'my-posts',
     loadComponent: () => import('./pages/main/main.component').then((m) => m.MainComponent),
   },

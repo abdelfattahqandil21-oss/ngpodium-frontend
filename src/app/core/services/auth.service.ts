@@ -9,6 +9,9 @@ import {
   LogoutResponse,
   RefreshTokenResponse,
   ProfileResponse,
+  UpdateProfileRequest,
+  UpdateProfileResponse,
+  UploadProfileResponse,
 } from './interfaces/auth.interface';
 import { TokenService } from './token.service';
 import { interval, Subscription, switchMap, filter } from 'rxjs';
@@ -49,6 +52,17 @@ export class AuthService {
 
   getProfile() {
     return this.http.get<ProfileResponse>(`${this.Base_URL}/auth/profile`);
+  }
+
+  updateProfile(id: number, payload: UpdateProfileRequest) {
+    return this.http.patch<UpdateProfileResponse>(`${this.Base_URL}/users/${id}`, payload);
+  }
+
+  uploadProfileImage(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post<UploadProfileResponse>(`${this.Base_URL}/upload/profile`, formData);
   }
 
 

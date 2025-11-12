@@ -35,7 +35,7 @@
     >
       @for(post of postState.posts(); track post.id) {
         <li 
-          (click)="onResultSelected()" 
+          (click)="onResultSelected(post)" 
           class="flex gap-3 p-2 hover:bg-white/5 cursor-pointer transition-colors"
         >
           <!-- Post Cover Image -->

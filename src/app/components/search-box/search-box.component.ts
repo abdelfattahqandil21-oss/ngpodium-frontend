@@ -4,6 +4,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { environment } from '../../../env/env';
 import { PostStateService } from '../../core/services/state/post-state.service';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { IPost } from '../../core/services/interfaces/posts.interface';
 
 @Component({
   selector: 'app-search-box',
@@ -15,8 +17,9 @@ export class SearchBoxComponent {
   private readonly _fb = inject(FormBuilder);
   private readonly _elRef = inject(ElementRef);
   readonly postState = inject(PostStateService);
+  private readonly _router = inject(Router);
 
-  private readonly _apiImg = environment.imgUrl;
+  private readonly _apiImg = environment.serchImg;
   readonly searchControl = this._fb.control('');
   readonly coverImg: string = this._apiImg;
   readonly showResults = signal<boolean>(false);
@@ -46,9 +49,10 @@ export class SearchBoxComponent {
   /**
    * Handle when a search result is selected
    */
-  onResultSelected() {
+  onResultSelected(post: IPost) {
     this.showResults.set(false);
     this.searchControl.setValue('', { emitEvent: false });
+    this._router.navigate(['/post', post.slug]);
   }
 
   /**

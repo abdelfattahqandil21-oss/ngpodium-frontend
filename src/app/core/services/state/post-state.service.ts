@@ -236,7 +236,7 @@ export class PostStateService {
     this.loadPosts({ 
       q: query, 
       page: 1,
-      limit: this._limit() || 20
+      limit: this._limit() || 2
     });
   }
 
@@ -247,7 +247,7 @@ export class PostStateService {
     this.loadPosts({ 
       tags: tags.join(','), 
       page: 1,
-      limit: this._limit() || 20
+      limit: this._limit() || 2
     });
   }
 
@@ -258,7 +258,7 @@ export class PostStateService {
     this.loadPosts({ 
       authorId, 
       page: 1,
-      limit: this._limit() || 20
+      limit: this._limit() || 2
     });
   }
 
@@ -289,7 +289,7 @@ export class PostStateService {
   resetFilters() {
     this._queryParams.set({
       page: 1,
-      limit: 20,
+      limit: 2,
       orderBy: 'createdAt',
       order: 'desc',
     });
@@ -407,6 +407,6 @@ export class PostStateService {
    * @deprecated Use loadFeed() instead
    */
   getAllFeeds() {
-    this.loadFeed({ offset: 0, limit: 10 });
+    this.loadFeed({ offset: 0, limit: 2 });
   }
 }

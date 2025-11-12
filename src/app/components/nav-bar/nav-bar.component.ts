@@ -1,15 +1,18 @@
-import { Component, computed, effect, inject, signal, OnInit } from '@angular/core';
+import { Component, computed, effect, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { NgOptimizedImage } from '@angular/common';
 import { environment } from '../../../env/env';
 import { AuthStateService } from '../../core/services/state/auth-state.service';
 import { SearchBoxComponent } from '../search-box/search-box.component';
 import { LogoutComponent } from '../btns/logout/logout.component';
+import { profileImageUrl } from '../../shared/utils/image-url.util';
 
 @Component({
   selector: 'app-nav-bar',
-  imports: [RouterLink, SearchBoxComponent, LogoutComponent],
+  imports: [RouterLink, SearchBoxComponent, LogoutComponent, NgOptimizedImage],
   templateUrl: './nav-bar.component.html',
   styleUrl: './nav-bar.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NavBarComponent implements OnInit {
 private readonly authSSVC = inject(AuthStateService);
@@ -32,28 +35,14 @@ readonly isLoggedIn = this.authSSVC.isLoggedIn;
 
   imgProfile = computed(() => {
     const profileData = this.profile();
-    
-    if(profileData?.image){
-      let imagePath = profileData.image;
-      
-      // Remove any base URL if present (e.g., http://localhost:3000)
-      imagePath = imagePath.replace(/^https?:\/\/[^\/]+/, '');
-      
-      // If image is just a filename (no path), use environment.profile
-      // If it already has /uploads/profile/, use imgUrl base
-      if (!imagePath.startsWith('/')) {
-        // Just filename: abdo-123.webp
-        return environment.profile + imagePath;
-      } else if (imagePath.startsWith('/uploads/profile/')) {
-        // Full path: /uploads/profile/abdo-123.webp
-        return 'http://localhost:3000' + imagePath;
-      } else {
-        // Other path: /some/path/image.webp
-        return environment.profile + imagePath;
-      }
-    }
-    
-    return '/assets/avatar.png';
+    return profileImageUrl(profileData?.image, environment.profile, '/assets/avatar.png');
+  });
+
+  // Check if using static fallback image
+  isUsingStaticAvatar = computed(() => {
+    const profileData = this.profile();
+    const loggedIn = this.isLoggedIn();
+    return !loggedIn || !profileData?.image;
   });
 
   nameProfile = computed(() => {
@@ -68,7 +57,7 @@ readonly isLoggedIn = this.authSSVC.isLoggedIn;
     this.menuOpen.set(false); // Close mobile menu
   }
   ngOnInit(): void {
-    this.authSSVC.getProfile();
+    // Profile is auto-loaded by AuthStateService when user is logged in
   }
 
 }

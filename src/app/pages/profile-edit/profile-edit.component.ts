@@ -1,16 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { environment } from '../../../env/env';
 import { AuthStateService } from '../../core/services/state/auth-state.service';
 import { UpdateProfileRequest } from '../../core/services/interfaces/auth.interface';
+import { profileImageUrl } from '../../shared/utils/image-url.util';
 
 @Component({
   selector: 'app-profile-edit-page',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="min-h-screen bg-zinc-950 text-white">
       <div class="container mx-auto px-4 py-10 max-w-3xl space-y-8">
@@ -338,25 +339,6 @@ export class ProfileEditPageComponent implements OnInit {
 
   private buildAvatarUrl(): string {
     const profile = this.profile();
-
-    if (!profile?.image) {
-      return '/assets/avatar.png';
-    }
-
-    if (profile.image.startsWith('http://') || profile.image.startsWith('https://')) {
-      return profile.image;
-    }
-
-    let imagePath = profile.image.replace(/^https?:\/\/[^\/]+/, '');
-
-    if (!imagePath.startsWith('/')) {
-      return this.profileBaseUrl + imagePath;
-    }
-
-    if (imagePath.startsWith('/uploads/profile/')) {
-      return 'http://localhost:3000' + imagePath;
-    }
-
-    return this.profileBaseUrl + imagePath;
+    return profileImageUrl(profile?.image, this.profileBaseUrl, '/assets/avatar.png');
   }
 }

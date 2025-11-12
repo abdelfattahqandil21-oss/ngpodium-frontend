@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavBarComponent } from '../../components/nav-bar/nav-bar.component';
 
 @Component({
@@ -6,6 +6,7 @@ import { NavBarComponent } from '../../components/nav-bar/nav-bar.component';
   imports: [NavBarComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeaderComponent {
 

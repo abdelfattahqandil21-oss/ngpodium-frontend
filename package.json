@@ -28,6 +28,7 @@
     "@angular/forms": "^20.3.0",
     "@angular/platform-browser": "^20.3.0",
     "@angular/router": "^20.3.0",
+    "@angular/service-worker": "^20.3.0",
     "@tiptap/core": "^3.10.5",
     "@tiptap/extension-code-block-lowlight": "^3.10.5",
     "@tiptap/extension-heading": "^3.10.5",

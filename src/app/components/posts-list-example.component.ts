@@ -1,17 +1,17 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { PostStateService } from '../core/services/state/post-state.service';
 import { environment } from '../../env/env';
 
 /**
  * Example component showing how to use PostStateService
- * with search, filter, sort, and pagination
+ * with search, filter, sort, and pagination using Reactive Forms
  */
 @Component({
   selector: 'app-posts-list-example',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="container mx-auto p-4">
       <!-- Header with Search and Filters -->
@@ -22,12 +22,11 @@ import { environment } from '../../env/env';
         <div class="flex gap-2">
           <input
             type="text"
-            [(ngModel)]="searchQuery"
-            (input)="onSearchChange()"
+            [formControl]="searchControl"
             placeholder="Search posts..."
             class="flex-1 px-4 py-2 bg-zinc-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          @if (searchQuery) {
+          @if (searchControl.value) {
             <button
               (click)="clearSearch()"
               class="px-4 py-2 bg-zinc-700 text-white rounded hover:bg-zinc-600"
@@ -43,8 +42,7 @@ import { environment } from '../../env/env';
           <div class="flex items-center gap-2">
             <label class="text-sm text-zinc-400">Sort by:</label>
             <select
-              [(ngModel)]="sortField"
-              (change)="onSortChange()"
+              [formControl]="sortFieldControl"
               class="px-3 py-2 bg-zinc-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="createdAt">Created Date</option>
@@ -57,8 +55,7 @@ import { environment } from '../../env/env';
           <div class="flex items-center gap-2">
             <label class="text-sm text-zinc-400">Order:</label>
             <select
-              [(ngModel)]="sortOrder"
-              (change)="onSortChange()"
+              [formControl]="sortOrderControl"
               class="px-3 py-2 bg-zinc-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="desc">Newest First</option>
@@ -70,13 +67,12 @@ import { environment } from '../../env/env';
           <div class="flex items-center gap-2">
             <label class="text-sm text-zinc-400">Per page:</label>
             <select
-              [(ngModel)]="pageSize"
-              (change)="onPageSizeChange()"
+              [formControl]="pageSizeControl"
               class="px-3 py-2 bg-zinc-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
+              <option [value]="10">10</option>
+              <option [value]="20">20</option>
+              <option [value]="50">50</option>
             </select>
           </div>
 
@@ -245,12 +241,13 @@ import { environment } from '../../env/env';
 export class PostsListExampleComponent implements OnInit {
   readonly postState = inject(PostStateService);
   readonly coverImg = environment.coverImg;
+  private readonly fb = inject(FormBuilder);
 
-  // Local filter state
-  searchQuery = '';
-  sortField: 'createdAt' | 'updatedAt' | 'title' = 'createdAt';
-  sortOrder: 'asc' | 'desc' = 'desc';
-  pageSize = 20;
+  // Reactive form controls
+  readonly searchControl = this.fb.control('');
+  readonly sortFieldControl = this.fb.control<'createdAt' | 'updatedAt' | 'title'>('createdAt');
+  readonly sortOrderControl = this.fb.control<'asc' | 'desc'>('desc');
+  readonly pageSizeControl = this.fb.control(20);
 
   private searchTimeout?: number;
 
@@ -258,10 +255,16 @@ export class PostsListExampleComponent implements OnInit {
     // Load initial posts
     this.postState.loadPosts({
       page: 1,
-      limit: this.pageSize,
-      orderBy: this.sortField,
-      order: this.sortOrder,
+      limit: this.pageSizeControl.value || 20,
+      orderBy: this.sortFieldControl.value || 'createdAt',
+      order: this.sortOrderControl.value || 'desc',
     });
+
+    // Subscribe to form control changes
+    this.searchControl.valueChanges.subscribe(() => this.onSearchChange());
+    this.sortFieldControl.valueChanges.subscribe(() => this.onSortChange());
+    this.sortOrderControl.valueChanges.subscribe(() => this.onSortChange());
+    this.pageSizeControl.valueChanges.subscribe(() => this.onPageSizeChange());
   }
 
   /**
@@ -275,14 +278,15 @@ export class PostsListExampleComponent implements OnInit {
 
     // Set new timeout for debounce
     this.searchTimeout = window.setTimeout(() => {
-      if (this.searchQuery.trim()) {
-        this.postState.search(this.searchQuery.trim());
+      const query = this.searchControl.value?.trim();
+      if (query) {
+        this.postState.search(query);
       } else {
         this.postState.loadPosts({
           page: 1,
-          limit: this.pageSize,
-          orderBy: this.sortField,
-          order: this.sortOrder,
+          limit: this.pageSizeControl.value || 20,
+          orderBy: this.sortFieldControl.value || 'createdAt',
+          order: this.sortOrderControl.value || 'desc',
         });
       }
     }, 300);
@@ -292,12 +296,12 @@ export class PostsListExampleComponent implements OnInit {
    * Clear search
    */
   clearSearch() {
-    this.searchQuery = '';
+    this.searchControl.setValue('');
     this.postState.loadPosts({
       page: 1,
-      limit: this.pageSize,
-      orderBy: this.sortField,
-      order: this.sortOrder,
+      limit: this.pageSizeControl.value || 20,
+      orderBy: this.sortFieldControl.value || 'createdAt',
+      order: this.sortOrderControl.value || 'desc',
     });
   }
 
@@ -305,24 +309,27 @@ export class PostsListExampleComponent implements OnInit {
    * Handle sort change
    */
   onSortChange() {
-    this.postState.sortBy(this.sortField, this.sortOrder);
+    this.postState.sortBy(
+      this.sortFieldControl.value || 'createdAt', 
+      this.sortOrderControl.value || 'desc'
+    );
   }
 
   /**
    * Handle page size change
    */
   onPageSizeChange() {
-    this.postState.changePageSize(this.pageSize);
+    this.postState.changePageSize(this.pageSizeControl.value || 20);
   }
 
   /**
    * Reset all filters
    */
   resetFilters() {
-    this.searchQuery = '';
-    this.sortField = 'createdAt';
-    this.sortOrder = 'desc';
-    this.pageSize = 20;
+    this.searchControl.setValue('');
+    this.sortFieldControl.setValue('createdAt');
+    this.sortOrderControl.setValue('desc');
+    this.pageSizeControl.setValue(20);
     this.postState.resetFilters();
   }
 

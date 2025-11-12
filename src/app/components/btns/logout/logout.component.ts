@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthStateService } from '../../../core/services/state/auth-state.service';
 import { TokenService } from '../../../core/services/token.service';
@@ -8,6 +8,7 @@ import { TokenService } from '../../../core/services/token.service';
   imports: [],
   templateUrl: './logout.component.html',
   styleUrl: './logout.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LogoutComponent {
 
@@ -15,8 +16,7 @@ export class LogoutComponent {
   private readonly authSSVC = inject(AuthStateService);
   private readonly router = inject(Router);
   onLogout(): void {
-    this.tokenService.removeToken();
-    this.authSSVC.isLoggedIn;
+    this.authSSVC.logout();
     this.router.navigate(['/']);
   }
 }

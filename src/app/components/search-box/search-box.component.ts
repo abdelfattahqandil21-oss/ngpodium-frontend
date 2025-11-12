@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, inject, signal } from '@angular/core';
+import { Component, ElementRef, inject, signal, ChangeDetectionStrategy, HostListener } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { environment } from '../../../env/env';
@@ -12,6 +12,10 @@ import { IPost } from '../../core/services/interfaces/posts.interface';
   imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './search-box.component.html',
   styleUrl: './search-box.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(document:click)': 'onClickOutside($event)'
+  }
 })
 export class SearchBoxComponent {
   private readonly _fb = inject(FormBuilder);
@@ -70,7 +74,6 @@ export class SearchBoxComponent {
   /**
    * Hide results when clicking outside the component
    */
-  @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
     if (!this._elRef.nativeElement.contains(event.target)) {
       this.showResults.set(false);

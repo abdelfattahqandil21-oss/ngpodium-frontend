@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, AfterViewChecked, ElementRef, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, signal, AfterViewChecked, ElementRef, ViewChild, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
@@ -6,6 +6,7 @@ import { PostStateService } from '../../core/services/state/post-state.service';
 import { AuthStateService } from '../../core/services/state/auth-state.service';
 import { environment } from '../../../env/env';
 import { IPost } from '../../core/services/interfaces/posts.interface';
+import { profileImageUrl, coverImageUrl } from '../../shared/utils/image-url.util';
 import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
 import typescript from 'highlight.js/lib/languages/typescript';
@@ -36,8 +37,8 @@ hljs.registerLanguage('ruby', ruby);
 
 @Component({
   selector: 'app-post-detail',
-  standalone: true,
   imports: [CommonModule, RouterLink, DatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="min-h-screen bg-zinc-950 text-white">
       <!-- Loading State -->
@@ -358,19 +359,12 @@ export class PostDetailComponent implements OnInit, AfterViewChecked {
     setTimeout(() => this.applySyntaxHighlighting(), 50);
   }
 
-  isOwner(): boolean {
+  readonly isOwner = computed(() => {
     const currentUser = this.authState.profile();
     const postAuthor = this.post()?.author;
     const isOwner = !!(currentUser && postAuthor && currentUser.id === postAuthor.id);
-    
-    console.log('isOwner check:', {
-      currentUserId: currentUser?.id,
-      postAuthorId: postAuthor?.id,
-      isOwner: isOwner
-    });
-    
     return isOwner;
-  }
+  });
 
   deletePost() {
     if (!confirm('Are you sure you want to delete this post?')) {
@@ -400,50 +394,14 @@ export class PostDetailComponent implements OnInit, AfterViewChecked {
    * Get full cover image URL with smart path handling
    */
   getCoverImageUrl(coverImage: string | null): string {
-    if (!coverImage) {
-      return this.demoImg;
-    }
-
-    let imagePath = coverImage;
-    
-    // Remove any base URL if present
-    imagePath = imagePath.replace(/^https?:\/\/[^\/]+/, '');
-    
-    if (!imagePath.startsWith('/')) {
-      // Just filename: image.webp
-      return this.imgcovered + imagePath;
-    } else if (imagePath.startsWith('/uploads/cover/')) {
-      // Full path: /uploads/cover/image.webp
-      return 'http://localhost:3000' + imagePath;
-    } else {
-      // Other path
-      return this.imgcovered + imagePath;
-    }
+    return coverImageUrl(coverImage, this.imgcovered, this.demoImg);
   }
 
   /**
    * Get full profile image URL with smart path handling
    */
   getProfileImageUrl(image: string | null): string {
-    if (!image) {
-      return this.demoImg;
-    }
-
-    let imagePath = image;
-    
-    // Remove any base URL if present
-    imagePath = imagePath.replace(/^https?:\/\/[^\/]+/, '');
-    
-    if (!imagePath.startsWith('/')) {
-      // Just filename: user.webp
-      return this.profileImg + imagePath;
-    } else if (imagePath.startsWith('/uploads/profile/')) {
-      // Full path: /uploads/profile/user.webp
-      return 'http://localhost:3000' + imagePath;
-    } else {
-      // Other path
-      return this.profileImg + imagePath;
-    }
+    return profileImageUrl(image, this.profileImg, this.demoImg);
   }
 
 }

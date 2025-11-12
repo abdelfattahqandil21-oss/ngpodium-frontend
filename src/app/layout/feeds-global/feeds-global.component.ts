@@ -3,6 +3,7 @@ import { PostStateService } from '../../core/services/state/post-state.service';
 import { DatePipe, CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { environment } from '../../../env/env';
+import { profileImageUrl, coverImageUrl } from '../../shared/utils/image-url.util';
 
 @Component({
   selector: 'app-feeds-global',
@@ -89,40 +90,14 @@ export class FeedsGlobalComponent implements OnInit, OnDestroy {
    * Get full cover image URL
    */
   getCoverImageUrl(post: any): string {
-    if (!post.coverImage) return this.demoImg;
-
-    let imagePath = post.coverImage.replace(/^https?:\/\/[^\/]+/, '');
-    let url: string;
-
-    if (!imagePath.startsWith('/')) {
-      url = this.imgcovered + imagePath;
-    } else if (imagePath.startsWith('/uploads/cover/')) {
-      url = 'http://localhost:3000' + imagePath;
-    } else {
-      url = this.imgcovered + imagePath;
-    }
-
-    return url;
+    return coverImageUrl(post.coverImage, this.imgcovered, this.demoImg);
   }
 
   /**
    * Get full profile image URL
    */
   getProfileImageUrl(author: any): string {
-    if (!author.image) return this.demoImg;
-
-    let imagePath = author.image.replace(/^https?:\/\/[^\/]+/, '');
-    let url: string;
-
-    if (!imagePath.startsWith('/')) {
-      url = this.profileImg + imagePath;
-    } else if (imagePath.startsWith('/uploads/profile/')) {
-      url = 'http://localhost:3000' + imagePath;
-    } else {
-      url = this.profileImg + imagePath;
-    }
-
-    return url;
+    return profileImageUrl(author.image, this.profileImg, this.demoImg);
   }
 
 

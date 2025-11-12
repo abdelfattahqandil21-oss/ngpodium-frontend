@@ -21,7 +21,6 @@ import { IPost } from '../core/services/interfaces/posts.interface';
 
 @Component({
   selector: 'app-write-post-page',
-  standalone: true,
   imports: [ReactiveFormsModule, CommonModule, RichEditorComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `

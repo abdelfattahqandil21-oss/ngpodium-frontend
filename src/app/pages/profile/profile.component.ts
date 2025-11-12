@@ -1,13 +1,14 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { environment } from '../../../env/env';
 import { AuthStateService } from '../../core/services/state/auth-state.service';
+import { profileImageUrl } from '../../shared/utils/image-url.util';
 
 @Component({
   selector: 'app-profile-page',
-  standalone: true,
   imports: [CommonModule, DatePipe, RouterLink],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="min-h-screen bg-zinc-950 text-white">
       <div class="mx-auto flex max-w-5xl flex-col gap-10 px-4 py-10">
@@ -137,25 +138,6 @@ export class ProfilePageComponent implements OnInit {
 
   private buildAvatarUrl(): string {
     const profileData = this.profile();
-
-    if (!profileData?.image) {
-      return '/assets/avatar.png';
-    }
-
-    if (profileData.image.startsWith('http://') || profileData.image.startsWith('https://')) {
-      return profileData.image;
-    }
-
-    let imagePath = profileData.image.replace(/^https?:\/\/[^\/]+/, '');
-
-    if (!imagePath.startsWith('/')) {
-      return this.profileBaseUrl + imagePath;
-    }
-
-    if (imagePath.startsWith('/uploads/profile/')) {
-      return 'http://localhost:3000' + imagePath;
-    }
-
-    return this.profileBaseUrl + imagePath;
+    return profileImageUrl(profileData?.image, this.profileBaseUrl, '/assets/avatar.png');
   }
 }

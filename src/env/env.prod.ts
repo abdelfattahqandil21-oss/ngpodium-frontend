@@ -5,5 +5,6 @@ export const environment = {
   imgUrl: 'http://localhost:3000/uploads/',
   profile: 'http://localhost:3000/uploads/profile/',
   coverImg: 'http://localhost:3000/uploads/cover/',
-  serchImg: 'http://localhost:3000'
+  serchImg: 'http://localhost:3000',
+  prodUrl : 'http://localhost:3000'
 };

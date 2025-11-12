@@ -17,7 +17,13 @@ export class AuthStateService {
   readonly profile = computed(() => this._profile());
   constructor() {
     effect(() => {
-      this._isLoggedIn.set(!!this.tokenService.getToken());
+      const hasToken = !!this.tokenService.getToken();
+      this._isLoggedIn.set(hasToken);
+      
+      // Auto-load profile if user is logged in but profile is not loaded
+      if (hasToken && !this._profile()) {
+        this.getProfile();
+      }
       // console.log(`isLoggedIn: ${this.isLoggedIn()}`);
     });
   }
@@ -27,6 +33,7 @@ export class AuthStateService {
   }
   logout() {
     this._isLoggedIn.set(false);
+    this._profile.set(null);
     this.tokenService.removeToken();
   }
   getProfile() {

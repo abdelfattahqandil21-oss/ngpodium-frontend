@@ -30,7 +30,6 @@ interface ToolbarButton {
 
 @Component({
   selector: 'app-rich-editor',
-  standalone: true,
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
